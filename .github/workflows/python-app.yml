@@ -36,7 +36,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Construct Environment (.env) & Run Auto10
+      - name: Run Auto10 Engine
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           GCS_API: ${{ secrets.GCS_API }}
@@ -52,21 +52,19 @@ jobs:
           WHISPER_MODEL: ${{ secrets.WHISPER_MODEL || 'medium' }}
         run: |
           cd auto10_engine
-
-          # Write environment variables into .env so all Auto10 submodules can read them
-          cat << 'EOF' > .env
-          GCS_API=$GCS_API
-          DRIVE_FOLDER_ID=$DRIVE_FOLDER_ID
-          GEMINI_API_KEY=$GEMINI_API_KEY
-          IG_REFRESH_TOKEN=$IG_REFRESH_TOKEN
-          APP_ID=$APP_ID
-          APP_SECRET=$APP_SECRET
-          IG_ID=$IG_ID
-          YOUTUBE_REFRESH_TOKEN=$YOUTUBE_REFRESH_TOKEN
-          CLIENT_ID=$CLIENT_ID
-          CLIENT_SECRET=$CLIENT_SECRET
-          WHISPER_MODEL=$WHISPER_MODEL
+          # Write environment variables expanding them properly:
+          cat << EOF > .env
+          GCS_API='$GCS_API'
+          DRIVE_FOLDER_ID='$DRIVE_FOLDER_ID'
+          GEMINI_API_KEY='$GEMINI_API_KEY'
+          IG_REFRESH_TOKEN='$IG_REFRESH_TOKEN'
+          APP_ID='$APP_ID'
+          APP_SECRET='$APP_SECRET'
+          IG_ID='$IG_ID'
+          YOUTUBE_REFRESH_TOKEN='$YOUTUBE_REFRESH_TOKEN'
+          CLIENT_ID='$CLIENT_ID'
+          CLIENT_SECRET='$CLIENT_SECRET'
+          WHISPER_MODEL='$WHISPER_MODEL'
           EOF
-
-          # Run the main explainer and upload engine
+          
           python ai_video_explainer_engine.py
