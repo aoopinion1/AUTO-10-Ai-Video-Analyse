@@ -12,29 +12,33 @@ jobs:
     timeout-minutes: 180 # Prevents stuck jobs (GitHub free limit is 360 mins)
 
     steps:
-      - name: Checkout Runner Repo
-        uses: actions/checkout@v4
+      - name: Free Disk Space on Runner
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install System Dependencies (FFmpeg & Libsndfile)
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg libsndfile1
 
       - name: Clone Engine Code from Main Account
+        env:
+          MAIN_TOKEN: ${{ secrets.MAIN_GITHUB_TOKEN }}
         run: |
-          # Clones your private AUTO-10 repo into an 'auto10_engine' directory
-          git clone https://${{ secrets.MAIN_GITHUB_TOKEN }}@github.com/shivank-shiv/AUTO-10.git auto10_engine
+          CLEAN_TOKEN=$(echo -n "$MAIN_TOKEN" | tr -d '\r\n[:space:]')
+          git clone "https://x-access-token:${CLEAN_TOKEN}@github.com/shivank-shiv/AUTO-10.git" auto10_engine
 
-      - name: Install Python Requirements
+      - name: Install PyTorch CPU (Saves 10GB+ Disk Space)
+        run: |
+          pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install Other Python Requirements
         run: |
           cd auto10_engine
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install --no-cache-dir -r requirements.txt
 
       - name: Run Auto10 Engine
         env:
