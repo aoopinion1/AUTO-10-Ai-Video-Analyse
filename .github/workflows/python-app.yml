@@ -1,0 +1,73 @@
+name: AUTO-10 Scheduled Production Pipeline
+
+on:
+  schedule:
+    # Runs 6 times a day (every 4 hours: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # Allows manual "Run workflow" click anytime
+
+jobs:
+  run-auto10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180 # Prevents stuck jobs (GitHub free limit is 360 mins)
+
+    steps:
+      - name: Checkout Runner Repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install System Dependencies (FFmpeg & Libsndfile)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg libsndfile1
+
+      - name: Clone Engine Code from Main Account
+        run: |
+          # Clones your private AUTO-10 repo into an 'auto10_engine' directory
+          git clone https://${{ secrets.MAIN_GITHUB_TOKEN }}@github.com/shivank-shiv/AUTO-10.git auto10_engine
+
+      - name: Install Python Requirements
+        run: |
+          cd auto10_engine
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Construct Environment (.env) & Run Auto10
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GCS_API: ${{ secrets.GCS_API }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          IG_REFRESH_TOKEN: ${{ secrets.IG_REFRESH_TOKEN }}
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          IG_ID: ${{ secrets.IG_ID }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          WHISPER_MODEL: ${{ secrets.WHISPER_MODEL || 'medium' }}
+        run: |
+          cd auto10_engine
+
+          # Write environment variables into .env so all Auto10 submodules can read them
+          cat << 'EOF' > .env
+          GCS_API=$GCS_API
+          DRIVE_FOLDER_ID=$DRIVE_FOLDER_ID
+          GEMINI_API_KEY=$GEMINI_API_KEY
+          IG_REFRESH_TOKEN=$IG_REFRESH_TOKEN
+          APP_ID=$APP_ID
+          APP_SECRET=$APP_SECRET
+          IG_ID=$IG_ID
+          YOUTUBE_REFRESH_TOKEN=$YOUTUBE_REFRESH_TOKEN
+          CLIENT_ID=$CLIENT_ID
+          CLIENT_SECRET=$CLIENT_SECRET
+          WHISPER_MODEL=$WHISPER_MODEL
+          EOF
+
+          # Run the main explainer and upload engine
+          python ai_video_explainer_engine.py
