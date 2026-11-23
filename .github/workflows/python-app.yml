@@ -9,7 +9,7 @@ on:
 jobs:
   run-auto10:
     runs-on: ubuntu-latest
-    timeout-minutes: 18 # Prevents stuck jobs (GitHub free limit is 360 mins)
+    timeout-minutes: 20 # Prevents stuck jobs (GitHub free limit is 360 mins)
 
     steps:
       - name: Free Disk Space on Runner
