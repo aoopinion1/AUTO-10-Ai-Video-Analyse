@@ -3,13 +3,13 @@ name: AUTO-10 Scheduled Production Pipeline
 on:
   schedule:
     # Runs 6 times a day (every 4 hours: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
-    - cron: '0 */5 * * *'
+    - cron: '0 */2 * * *'
   workflow_dispatch: # Allows manual "Run workflow" click anytime
 
 jobs:
   run-auto10:
     runs-on: ubuntu-latest
-    timeout-minutes: 20 # Prevents stuck jobs (GitHub free limit is 360 mins)
+    # timeout-minutes: 20 # Prevents stuck jobs (GitHub free limit is 360 mins)
 
     steps:
       - name: Free Disk Space on Runner
