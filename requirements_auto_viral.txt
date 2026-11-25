@@ -1,0 +1,21 @@
+# ==============================================================================
+# Requirements for AUTO-10: auto_viral_clip_generator.py
+# (Fast, lightweight install - no heavy PyTorch/Whisper needed)
+# ==============================================================================
+
+# Google GenAI & Google Cloud / Drive / YouTube APIs
+google-genai
+google-api-python-client
+google-auth
+google-auth-httplib2
+google-auth-oauthlib
+
+# Video Analysis, Computer Vision & Audio Processing
+opencv-python-headless
+numpy
+Pillow
+scipy
+
+# Utilities, Web Requests & Environment
+requests
+python-dotenv
