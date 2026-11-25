@@ -54,7 +54,7 @@ jobs:
           IG_REFRESH_TOKEN: ${{ secrets.IG_REFRESH_TOKEN }}
           APP_ID: ${{ secrets.APP_ID }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
-          IG_ID: ${{ secrets.IG_ID }}
+          IG_ID: ${{ secrets.IG_ID_2 }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
