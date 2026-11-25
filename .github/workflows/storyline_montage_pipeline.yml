@@ -1,0 +1,76 @@
+name: AUTO-10 Storyline Viral Montage Generator Pipeline
+
+on:
+  schedule:
+    # Runs 6 times a day (staggered at :40 to run after auto_viral_clip_generator)
+    - cron: '40 */4 * * *'
+  workflow_dispatch: # Allows manual "Run workflow" trigger anytime
+
+jobs:
+  run-storyline-montage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Free Disk Space on Runner
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg libsndfile1
+
+      - name: Clone Engine Code from Main Account
+        env:
+          MAIN_TOKEN: ${{ secrets.MAIN_GITHUB_TOKEN }}
+        run: |
+          CLEAN_TOKEN=$(echo -n "$MAIN_TOKEN" | tr -d '\r\n[:space:]')
+          git clone "https://x-access-token:${CLEAN_TOKEN}@github.com/shivank-shiv/AUTO-10.git" auto10_engine
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python Requirements
+        run: |
+          cd auto10_engine
+          if [ -f requirements_storyline.txt ]; then
+            pip install --no-cache-dir -r requirements_storyline.txt
+          else
+            pip install --no-cache-dir -r requirements.txt
+          fi
+
+      - name: Run Storyline Viral Montage Generator Engine
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GCS_API: ${{ secrets.GCS_API }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          IG_REFRESH_TOKEN: ${{ secrets.IG_REFRESH_TOKEN }}
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          IG_ID: ${{ secrets.IG_ID }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        run: |
+          cd auto10_engine
+          cat << EOF > .env
+          GCS_API='$GCS_API'
+          DRIVE_FOLDER_ID='$DRIVE_FOLDER_ID'
+          GEMINI_API_KEY='$GEMINI_API_KEY'
+          IG_REFRESH_TOKEN='$IG_REFRESH_TOKEN'
+          APP_ID='$APP_ID'
+          APP_SECRET='$APP_SECRET'
+          IG_ID='$IG_ID'
+          YOUTUBE_REFRESH_TOKEN='$YOUTUBE_REFRESH_TOKEN'
+          CLIENT_ID='$CLIENT_ID'
+          CLIENT_SECRET='$CLIENT_SECRET'
+          EOF
+
+          python storyline_viral_montage_generator.py
