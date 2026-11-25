@@ -3,7 +3,7 @@ name: AUTO-10 Storyline Viral Montage Generator Pipeline
 on:
   schedule:
     # Runs 6 times a day (staggered at :40 to run after auto_viral_clip_generator)
-    - cron: '40 */4 * * *'
+    - cron: '0 */2 * * *'
   workflow_dispatch: # Allows manual "Run workflow" trigger anytime
 
 jobs:
