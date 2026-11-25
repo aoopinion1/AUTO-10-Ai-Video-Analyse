@@ -1,4 +1,4 @@
-name: AUTO-10 Scheduled Production Pipeline
+name: AUTO-10 Movie Explanation
 
 on:
   schedule:
