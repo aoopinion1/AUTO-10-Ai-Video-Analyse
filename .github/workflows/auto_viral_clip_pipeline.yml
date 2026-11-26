@@ -52,9 +52,9 @@ jobs:
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           IG_REFRESH_TOKEN: ${{ secrets.IG_REFRESH_TOKEN }}
-          APP_ID: ${{ secrets.APP_ID_3 }}
+          APP_ID: ${{ secrets.APP_ID }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
-          IG_ID: ${{ secrets.IG_ID }}
+          IG_ID: ${{ secrets.IG_ID_3 }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
